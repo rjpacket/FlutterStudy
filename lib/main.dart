@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         // "hot reload" (press "r" in the console where you ran "flutter run",
         // or press Run > Flutter Hot Reload in IntelliJ). Notice that the
         // counter didn't reset back to zero; the application is not restarted.
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.amber,
       ),
       home: new MyHomePage(title: 'Flutter Demo Home Page'),
     );
@@ -103,7 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: new FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: new Icon(Icons.add),
+        child: new Icon(Icons.android),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
