@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/widgets/PopupWindow.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_app/widgets/TopBar.dart';
@@ -195,27 +196,40 @@ void main() {
   ));
 }
 
-class FirstScreen extends StatelessWidget {
+class FirstScreen extends StatefulWidget{
+  @override
+  State<StatefulWidget> createState() {
+    return FirstScreenState();
+  }
+}
+
+class FirstScreenState extends State<FirstScreen> {
+  bool isHidePopup = false;
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
         title: new Text('第一页内容'),
       ),
-      body: new Center(
-        child: new RaisedButton(
-            child: new Text('跳转第二页'),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  new MaterialPageRoute(
-                      builder: (context) => new SecondScreen()));
-            }),
+      body: Stack(
+        children: <Widget>[
+          new Center(
+            child: new RaisedButton(
+                child: new Text('跳转第二页'),
+                onPressed: () {
+//              Navigator.push(
+//                  context,
+//                  new MaterialPageRoute(
+//                      builder: (context) => new SecondScreen()));
+
+                }),
+          ),
+
+        ],
       ),
     );
   }
-
-  _skipToSecondPage(BuildContext context) {}
 }
 
 class SecondScreen extends StatelessWidget {
@@ -275,39 +289,75 @@ class DemoPageState extends State<DemoPage> with SingleTickerProviderStateMixin{
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-//      appBar: PreferredSize(
-//          child: TopBar(
-//            title: '',
-//            backgroundColor: Colors.blue,
-//            rightIcon: Icon(
-//              Icons.more_vert,
-//              color: Colors.white,
-//            ),
-//          ),
-//          preferredSize: null
-//      ),
-      bottomNavigationBar: Container(
-        height: 60,
-        child: Center(
-          child: TabLayout(
-            titles: tabs,
-            selectedIcons: selectedIcons,
-            unSelectedIcons: unSelectedIcons,
-            controller: _tabController,
-            isShowIndicator: false,
-            selectedIndex: selectedIndex,
+
+    return Stack(
+      children: <Widget>[
+        _buildPage(),
+
+        PopupWindow(
+          width: 100,
+          height: 240,
+          left: 100,
+          top: 100,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                height: 40,
+                child: Center(
+                  child: Text(
+                    '删除',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.redAccent,
+                        decoration: TextDecoration.none
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                height: 40,
+                child: Center(
+                  child: Text(
+                    '撤回',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.redAccent,
+                        decoration: TextDecoration.none
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                height: 40,
+                child: Center(
+                  child: Text(
+                    '取消',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.blueAccent,
+                        decoration: TextDecoration.none
+                    ),
+                  ),
+                ),
+              ),
+              Container(
+                height: 40,
+                child: Center(
+                  child: Text(
+                    '确认',
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.blueAccent,
+                        decoration: TextDecoration.none
+                    ),
+                  ),
+                ),
+              )
+            ],
           ),
         ),
-      ),
-      body: TabBarView(
-        children: <Widget>[
-          MyPage(),
-          FirstScreen(),
-          SecondScreen()
-        ],
-        controller: _tabController,
-      ),
+      ],
     );
   }
 
@@ -486,6 +536,43 @@ class DemoPageState extends State<DemoPage> with SingleTickerProviderStateMixin{
             ],
           )
         ],
+      ),
+    );
+  }
+
+  Widget _buildPage() {
+    return Scaffold(
+//      appBar: PreferredSize(
+//          child: TopBar(
+//            title: '',
+//            backgroundColor: Colors.blue,
+//            rightIcon: Icon(
+//              Icons.more_vert,
+//              color: Colors.white,
+//            ),
+//          ),
+//          preferredSize: null
+//      ),
+      bottomNavigationBar: Container(
+        height: 60,
+        child: Center(
+          child: TabLayout(
+            titles: tabs,
+            selectedIcons: selectedIcons,
+            unSelectedIcons: unSelectedIcons,
+            controller: _tabController,
+            isShowIndicator: false,
+            selectedIndex: selectedIndex,
+          ),
+        ),
+      ),
+      body: TabBarView(
+        children: <Widget>[
+          MyPage(),
+          FirstScreen(),
+          SecondScreen(),
+        ],
+        controller: _tabController,
       ),
     );
   }
