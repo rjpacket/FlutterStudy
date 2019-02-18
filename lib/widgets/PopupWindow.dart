@@ -6,8 +6,8 @@ class PopupWindow extends StatelessWidget{
   final bool isCoverShow;
   final double width;
   final double height;
-  final double left;
-  final double top;
+  double left;
+  double top;
   Decoration decoration;
 
   PopupWindow({
@@ -36,10 +36,14 @@ class PopupWindow extends StatelessWidget{
 
     if(left + width <= screenWidth){
       right = screenWidth - left - width;
+    }else{
+      left = screenWidth - width;
     }
 
     if(top + height <= screenHeight){
       bottom = screenHeight - top - height;
+    }else{
+      top = screenHeight - height;
     }
 
     if(decoration == null){

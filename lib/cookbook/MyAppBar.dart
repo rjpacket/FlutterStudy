@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/utils/ScreenUtil.dart';
 import 'package:flutter_app/widgets/PopupWindow.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -197,6 +198,10 @@ void main() {
 }
 
 class FirstScreen extends StatefulWidget{
+  final callback;
+
+  const FirstScreen({Key key, this.callback}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() {
     return FirstScreenState();
@@ -204,7 +209,6 @@ class FirstScreen extends StatefulWidget{
 }
 
 class FirstScreenState extends State<FirstScreen> {
-  bool isHidePopup = false;
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +226,7 @@ class FirstScreenState extends State<FirstScreen> {
 //                  context,
 //                  new MaterialPageRoute(
 //                      builder: (context) => new SecondScreen()));
-
+                  widget.callback();
                 }),
           ),
 
@@ -233,6 +237,11 @@ class FirstScreenState extends State<FirstScreen> {
 }
 
 class SecondScreen extends StatelessWidget {
+  final callback;
+  GlobalKey btnKey = GlobalKey();
+
+  SecondScreen({Key key, this.callback}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
@@ -241,9 +250,13 @@ class SecondScreen extends StatelessWidget {
       ),
       body: new Center(
         child: new RaisedButton(
+          key: btnKey,
             child: new Text('第二页'),
             onPressed: () {
-              Navigator.pop(context);
+//              Navigator.pop(context);
+              RenderBox renderBox = btnKey.currentContext.findRenderObject();
+              var offset =  renderBox.localToGlobal(Offset(0.0, renderBox.size.height));
+              callback(offset);
             }),
       ),
     );
@@ -274,6 +287,12 @@ class DemoPageState extends State<DemoPage> with SingleTickerProviderStateMixin{
 
   TabController _tabController;
   int selectedIndex = 1;
+  bool isHidePopup = true;
+  Widget popupChild;
+  double popupWidth = 0;
+  double popupHeight = 0;
+  double popupLeft = 0;
+  double popupTop = 0;
 
   @override
   void initState() {
@@ -285,258 +304,35 @@ class DemoPageState extends State<DemoPage> with SingleTickerProviderStateMixin{
         selectedIndex = _tabController.index;
       });
     });
+
+
   }
 
   @override
   Widget build(BuildContext context) {
 
-    return Stack(
-      children: <Widget>[
-        _buildPage(),
+    return WillPopScope(
+        child: Stack(
+          children: <Widget>[
+            _buildPage(),
 
-        PopupWindow(
-          width: 100,
-          height: 240,
-          left: 100,
-          top: 100,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Container(
-                height: 40,
-                child: Center(
-                  child: Text(
-                    '删除',
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.redAccent,
-                        decoration: TextDecoration.none
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                height: 40,
-                child: Center(
-                  child: Text(
-                    '撤回',
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.redAccent,
-                        decoration: TextDecoration.none
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                height: 40,
-                child: Center(
-                  child: Text(
-                    '取消',
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.blueAccent,
-                        decoration: TextDecoration.none
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                height: 40,
-                child: Center(
-                  child: Text(
-                    '确认',
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.blueAccent,
-                        decoration: TextDecoration.none
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
+            PopupWindow(
+              width: popupWidth,
+              height: popupHeight,
+              left: popupLeft,
+              top: popupTop,
+              isHidePopup: isHidePopup,
+              child: (popupChild == null ? Divider() : popupChild),
+            ),
+          ],
         ),
-      ],
-    );
-  }
-
-  Widget _buildUserLabel() {
-    return Container(
-      color: Colors.blue,
-      child: Column(
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              Padding(padding: const EdgeInsets.only(left: 20.0)),
-              Image(
-                width: 50.0,
-                  height: 50.0,
-                  image: AssetImage('assets/default_user_head.png')
-              ),
-              Expanded(
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                        '3年级6班',
-                        style: TextStyle(
-                            fontSize: 28.0,
-                            color: Colors.white,
-                          decoration: TextDecoration.none
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(
-                            '老师8',
-                            style: TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.white,
-                                decoration: TextDecoration.none
-                            ),
-                          ),
-                          Text(
-                            '学生23',
-                            style: TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.white,
-                                decoration: TextDecoration.none
-                            ),
-                          ),
-                          Text(
-                            '财富8',
-                            style: TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.white,
-                                decoration: TextDecoration.none
-                            ),
-                          ),
-                          Text(
-                            '动态12',
-                            style: TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.white,
-                                decoration: TextDecoration.none
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  )
-              ),
-            ],
-          ),
-          Divider(
-            color: Colors.white,
-          ),
-          Container(
-            height: 30.0,
-            child: Text(
-              '公告：下午四点小王子话剧彩排',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14.0,
-                  decoration: TextDecoration.none
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _bulidTab() {
-    return Container(
-      color: Colors.white,
-      height: 42.0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Padding(padding: const EdgeInsets.only(left: 5.0)),
-          Text(
-            '作业列表',
-            style: TextStyle(
-                fontSize: 14.0,
-                color: Colors.blue,
-                decoration: TextDecoration.none
-            ),
-          ),
-          Text(
-            '完成率',
-            style: TextStyle(
-                fontSize: 14.0,
-                color: Colors.grey,
-                decoration: TextDecoration.none
-            ),
-          ),
-          Text(
-            '错题本',
-            style: TextStyle(
-                fontSize: 14.0,
-                color: Colors.grey,
-                decoration: TextDecoration.none
-            ),
-          ),
-          Text(
-            '排行榜',
-            style: TextStyle(
-                fontSize: 14.0,
-                color: Colors.grey,
-                decoration: TextDecoration.none
-            ),
-          ),
-          Padding(padding: const EdgeInsets.only(right: 5.0))
-        ],
-      ),
-    );
-  }
-
-  Widget _buildListView(BuildContext context, int index) {
-    return Container(
-      margin: const EdgeInsets.all(10.0),
-      padding: const EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-      ),
-      child: Column(
-        children: <Widget>[
-          Text(
-            '语文口语专项训练',
-            style: TextStyle(
-                fontSize: 20.0,
-                color: Colors.black,
-                decoration: TextDecoration.none
-            ),
-          ),
-          Text(
-            '9月28日 星期三',
-            style: TextStyle(
-                fontSize: 14.0,
-                color: Colors.grey,
-                decoration: TextDecoration.none
-            ),
-          ),
-          Row(
-            children: <Widget>[
-//                LinearProgressIndicator(
-//                  backgroundColor: Colors.grey,
-//                  value: 50,
-//                ),
-              Text(
-                '完成人数 50/100',
-                style: TextStyle(
-                    fontSize: 12.0,
-                    color: Colors.grey,
-                    decoration: TextDecoration.none
-                ),
-              ),
-            ],
-          )
-        ],
-      ),
+        onWillPop: () {
+          if(!isHidePopup){
+            setState(() {
+              isHidePopup = true;
+            });
+          }
+        }
     );
   }
 
@@ -569,8 +365,139 @@ class DemoPageState extends State<DemoPage> with SingleTickerProviderStateMixin{
       body: TabBarView(
         children: <Widget>[
           MyPage(),
-          FirstScreen(),
-          SecondScreen(),
+          FirstScreen(callback: () {
+           setState(() {
+             popupWidth = ScreenUtil.getScreenWidth(context);
+             popupHeight = 200;
+             popupLeft = 0;
+             popupTop = ScreenUtil.getScreenHeight(context) - 200;
+             popupChild = Column(
+               mainAxisSize: MainAxisSize.min,
+               children: <Widget>[
+                 Container(
+                   height: 40,
+                   child: Center(
+                     child: Text(
+                       '删除',
+                       style: TextStyle(
+                           fontSize: 14,
+                           color: Colors.redAccent,
+                           decoration: TextDecoration.none
+                       ),
+                     ),
+                   ),
+                 ),
+                 Container(
+                   height: 40,
+                   child: Center(
+                     child: Text(
+                       '撤回',
+                       style: TextStyle(
+                           fontSize: 14,
+                           color: Colors.redAccent,
+                           decoration: TextDecoration.none
+                       ),
+                     ),
+                   ),
+                 ),
+                 Container(
+                   height: 40,
+                   child: Center(
+                     child: Text(
+                       '取消',
+                       style: TextStyle(
+                           fontSize: 14,
+                           color: Colors.blueAccent,
+                           decoration: TextDecoration.none
+                       ),
+                     ),
+                   ),
+                 ),
+                 Container(
+                   height: 40,
+                   child: Center(
+                     child: Text(
+                       '确认',
+                       style: TextStyle(
+                           fontSize: 14,
+                           color: Colors.blueAccent,
+                           decoration: TextDecoration.none
+                       ),
+                     ),
+                   ),
+                 )
+               ],
+             );
+             isHidePopup = false;
+
+           });
+          }),
+          SecondScreen(callback: (offset) {
+            setState(() {
+              popupWidth = 100;
+              popupHeight = 200;
+              popupLeft = offset.dx;
+              popupTop = offset.dy;
+              popupChild = Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    height: 40,
+                    child: Center(
+                      child: Text(
+                        '删除',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.redAccent,
+                            decoration: TextDecoration.none
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    child: Center(
+                      child: Text(
+                        '撤回',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.redAccent,
+                            decoration: TextDecoration.none
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    child: Center(
+                      child: Text(
+                        '取消',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.blueAccent,
+                            decoration: TextDecoration.none
+                        ),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    height: 40,
+                    child: Center(
+                      child: Text(
+                        '确认',
+                        style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.blueAccent,
+                            decoration: TextDecoration.none
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              );
+              isHidePopup = false;
+            });
+          },),
         ],
         controller: _tabController,
       ),
