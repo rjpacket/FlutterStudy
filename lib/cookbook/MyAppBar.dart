@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/res/strings.dart';
 import 'package:flutter_app/utils/ScreenUtil.dart';
 import 'package:flutter_app/widgets/PopupWindow.dart';
+import 'package:flutter_app/widgets/SettingItem.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_app/widgets/TopBar.dart';
@@ -248,16 +250,20 @@ class SecondScreen extends StatelessWidget {
       appBar: new AppBar(
         title: new Text('第二页内容'),
       ),
-      body: new Center(
-        child: new RaisedButton(
-          key: btnKey,
-            child: new Text('第二页'),
-            onPressed: () {
-//              Navigator.pop(context);
-              RenderBox renderBox = btnKey.currentContext.findRenderObject();
-              var offset =  renderBox.localToGlobal(Offset(0.0, renderBox.size.height));
-              callback(offset);
-            }),
+      body: ListView(
+        children: <Widget>[
+          SettingItem(icon: 'assets/images/nav_01.png', settingTitle: Strings.mine_pay),
+          Divider(height: 1,),
+          SettingItem(icon: 'assets/images/nav_02.png', settingTitle: Strings.mine_save),
+          Divider(height: 1,),
+          SettingItem(icon: 'assets/images/nav_03.png', settingTitle: Strings.mine_album),
+          Divider(height: 1,),
+          SettingItem(icon: 'assets/images/nav_04.png', settingTitle: Strings.mine_card),
+          Divider(height: 1,),
+          SettingItem(icon: 'assets/images/nav_05.png', settingTitle: Strings.mine_face),
+          Divider(height: 1,),
+          SettingItem(icon: 'assets/images/nav_01.png', settingTitle: Strings.mine_setting),
+        ],
       ),
     );
   }
