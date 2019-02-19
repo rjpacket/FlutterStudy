@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/foundation/diagnostics.dart';
+import 'package:flutter_app/res/Config.dart';
+import 'package:flutter_app/res/colors.dart';
+import 'package:flutter_app/utils/ScreenUtil.dart';
 
 class TopBar extends StatefulWidget {
   final Key key;
@@ -9,7 +13,15 @@ class TopBar extends StatefulWidget {
   final Widget leftIcon;
   final Widget rightIcon;
 
-  TopBar({this.height: 80.0, this.key, this.backgroundColor: Colors.red, this.title, this.middle, this.leftIcon, this.rightIcon}) : super(key: key);
+  TopBar({
+    this.height,
+    this.key,
+    this.backgroundColor: Colours.main_color,
+    this.title,
+    this.middle,
+    this.leftIcon,
+    this.rightIcon
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -28,9 +40,13 @@ class TopBarState extends State<TopBar> {
     //如果没有设置左边的返回按钮，默认一个icon
     if(leftIcon == null){
       leftIcon = GestureDetector(
-        child: Icon(
+        child: Container(
+          width: 20,
+          height: 20,
+          child: Icon(
             Icons.arrow_back,
-          color: Colors.white,
+            color: Colors.white,
+          ),
         ),
         onTap: () {
           Navigator.pop(context);
@@ -54,16 +70,37 @@ class TopBarState extends State<TopBar> {
       );
     }
 
+    double statusBarHeight = ScreenUtil.getStatusBarHeight(context);
+    double topBarHeight = widget.height;
+    if(widget.height == 0 || widget.height == null){
+      topBarHeight = statusBarHeight + ScreenUtil.getAdaptWidth(context, Config.TOP_BAR_HEIGHT);
+    }
+
+    bool showRight = widget.rightIcon == null;
+
     return Container(
-      height: widget.height,
+      height: topBarHeight,
       color: widget.backgroundColor,
-      padding: const EdgeInsets.only(top: 25.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: EdgeInsets.only(top: statusBarHeight),
+      child: Stack(
         children: <Widget>[
-          leftIcon,
-          middle,
-          widget.rightIcon
+          Container(
+            height: topBarHeight,
+            padding: EdgeInsets.only(left: Config.TOP_BAR_PADDING_LEFT, right: Config.TOP_BAR_PADDING_RIGHT),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                leftIcon,
+                Offstage(
+                  offstage: showRight,
+                  child: widget.rightIcon,
+                )
+              ],
+            ),
+          ),
+          Center(
+            child: middle,
+          )
         ],
       ),
     );

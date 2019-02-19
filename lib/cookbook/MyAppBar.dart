@@ -1,12 +1,21 @@
+import 'dart:async';
+
+import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_app/activitys/CanvasActivity.dart';
+import 'package:flutter_app/activitys/EventBusActivity.dart';
+import 'package:flutter_app/activitys/PageAnimActivity.dart';
+import 'package:flutter_app/res/events.dart';
 import 'package:flutter_app/res/strings.dart';
 import 'package:flutter_app/utils/ScreenUtil.dart';
+import 'package:flutter_app/widgets/BaseActivity.dart';
 import 'package:flutter_app/widgets/PopupWindow.dart';
 import 'package:flutter_app/widgets/SettingItem.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter_app/widgets/TopBar.dart';
 import 'package:flutter_app/widgets/TabLayout.dart';
+import 'package:flutter_swiper/flutter_swiper.dart';
 
 class MyAppBar extends StatelessWidget {
   MyAppBar({this.title});
@@ -30,26 +39,50 @@ class MyAppBar extends StatelessWidget {
   }
 }
 
-class MyPage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return HomePageState();
+  }
+}
+
+class HomePageState extends State<HomePage>{
   @override
   Widget build(BuildContext context) {
-    return new Material(
-      child: new Column(
+    double bannerWidth = ScreenUtil.getScreenWidth(context);
+    double bannerHeight = bannerWidth * 9 / 16;
+    return Container(
+      constraints: BoxConstraints.expand(),
+      child: ListView(
         children: <Widget>[
-          new MyAppBar(
-            title: new Text(
-              'My Page Title',
-              style: Theme.of(context).primaryTextTheme.title,
+          Container(
+            height: bannerHeight,
+            child: Swiper(
+              itemHeight: bannerHeight,
+              itemWidth: bannerWidth,
+              itemBuilder: _swiperBuilder,
+              itemCount: 3,
+              pagination: SwiperPagination(
+                  builder: DotSwiperPaginationBuilder(
+                      color: Colors.black54,
+                      activeColor: Colors.white
+                  )
+              ),
+              controller: SwiperController(),
+              scrollDirection: Axis.horizontal,
+              autoplay: true,
+              onTap: (index) => print('点击了$index'),
             ),
           ),
-          new Expanded(
-              child: new ShopList(products: <Product>[
-            new Product(name: 'Android'),
-            new Product(name: 'IOS'),
-            new Product(name: 'H5')
-          ]))
         ],
       ),
+    );
+  }
+
+  Widget _swiperBuilder(BuildContext context, int index){
+    return Image.network(
+      'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1550587349851&di=ac6ded31ae5b36a318f4801c1d3fba07&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01f250599633290000002129408089.jpg%402o.jpg',
+      fit: BoxFit.fill,
     );
   }
 }
@@ -193,36 +226,33 @@ class CounterState extends State<Counter> {
 }
 
 void main() {
-  runApp(new MaterialApp(
-    title: 'My App',
-    home: new DemoPage(),
-  ));
+  runApp(new MainActivity());
 }
 
-class FirstScreen extends StatefulWidget{
+class FindPage extends StatefulWidget{
   final callback;
 
-  const FirstScreen({Key key, this.callback}) : super(key: key);
+  const FindPage({Key key, this.callback}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return FirstScreenState();
+    return FindPageState();
   }
 }
 
-class FirstScreenState extends State<FirstScreen> {
+class FindPageState extends State<FindPage> {
 
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('第一页内容'),
+        title: new Text('发现'),
       ),
       body: Stack(
         children: <Widget>[
           new Center(
             child: new RaisedButton(
-                child: new Text('跳转第二页'),
+                child: new Text('跳转我的'),
                 onPressed: () {
 //              Navigator.push(
 //                  context,
@@ -238,47 +268,110 @@ class FirstScreenState extends State<FirstScreen> {
   }
 }
 
-class SecondScreen extends StatelessWidget {
+class MinePage extends StatefulWidget{
   final callback;
-  GlobalKey btnKey = GlobalKey();
 
-  SecondScreen({Key key, this.callback}) : super(key: key);
+  MinePage({Key key, this.callback}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return MinePageState();
+  }
+}
+
+class MinePageState extends State<MinePage> {
+  String title = '我的';
+
+  @override
+  void initState() {
+    super.initState();
+
+    //监听EventBus的消息
+    eventBus.on<EventBusEvent>().listen((event) {
+      setState(() {
+        title = event.title;
+      });
+    });
+    //下面写法可以控制是否监听
+//    StreamSubscription subscription = eventBus.on<EventBusEvent>().listen((event) {
+//      setState(() {
+//        title = event.title;
+//      });
+//    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    print('我的页面构建......');
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('第二页内容'),
+        title: new Text(title),
       ),
       body: ListView(
         children: <Widget>[
-          SettingItem(icon: 'assets/images/nav_01.png', settingTitle: Strings.mine_pay),
+          SettingItem(
+            icon: 'assets/images/nav_01.png',
+            settingTitle: Strings.mine_pay,
+            callback: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => EventBusActivity()));
+            },
+          ),
           Divider(height: 1,),
-          SettingItem(icon: 'assets/images/nav_02.png', settingTitle: Strings.mine_save),
+          SettingItem(
+            icon: 'assets/images/nav_02.png',
+            settingTitle: Strings.mine_save,
+            callback: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => CanvasActivity()));
+            },
+          ),
           Divider(height: 1,),
-          SettingItem(icon: 'assets/images/nav_03.png', settingTitle: Strings.mine_album),
+          SettingItem(
+            icon: 'assets/images/nav_03.png',
+            settingTitle: Strings.mine_album,
+            callback: () {
+              Navigator.of(context).push(PageRouteBuilder(
+                pageBuilder: (context, anim1, anim2) => PageAnimActivity(),
+                transitionsBuilder: (context, anim1, anim2, child) => SlideTransition(
+                  position: Tween<Offset>(
+                    begin: Offset(1.0, 0.0),
+                    end: Offset(0.0, 0.0),
+                  ).animate(anim1),
+                  child: child,
+                ),
+              ));
+            },
+          ),
           Divider(height: 1,),
-          SettingItem(icon: 'assets/images/nav_04.png', settingTitle: Strings.mine_card),
+          SettingItem(
+            icon: 'assets/images/nav_04.png',
+            settingTitle: Strings.mine_card,
+          ),
           Divider(height: 1,),
-          SettingItem(icon: 'assets/images/nav_05.png', settingTitle: Strings.mine_face),
+          SettingItem(
+            icon: 'assets/images/nav_05.png',
+            settingTitle: Strings.mine_face,
+          ),
           Divider(height: 1,),
-          SettingItem(icon: 'assets/images/nav_01.png', settingTitle: Strings.mine_setting),
+          SettingItem(
+            icon: 'assets/images/nav_01.png',
+            settingTitle: Strings.mine_setting,
+          ),
         ],
       ),
     );
   }
 }
 
-class DemoPage extends StatefulWidget{
+class MainActivity extends StatefulWidget{
 
 
   @override
   State<StatefulWidget> createState() {
-    return DemoPageState();
+    return MainActivityState();
   }
 }
 
-class DemoPageState extends State<DemoPage> with SingleTickerProviderStateMixin{
+class MainActivityState extends State<MainActivity> with SingleTickerProviderStateMixin{
   final List<String> tabs = ['首页', '发现', '我的'];
   final List<Image> selectedIcons = [
     Image.asset('assets/images/nav_01.png', width: 20, height: 20,),
@@ -370,8 +463,8 @@ class DemoPageState extends State<DemoPage> with SingleTickerProviderStateMixin{
       ),
       body: TabBarView(
         children: <Widget>[
-          MyPage(),
-          FirstScreen(callback: () {
+          HomePage(),
+          FindPage(callback: () {
            setState(() {
              popupWidth = ScreenUtil.getScreenWidth(context);
              popupHeight = 200;
@@ -438,7 +531,7 @@ class DemoPageState extends State<DemoPage> with SingleTickerProviderStateMixin{
 
            });
           }),
-          SecondScreen(callback: (offset) {
+          MinePage(callback: (offset) {
             setState(() {
               popupWidth = 100;
               popupHeight = 200;
