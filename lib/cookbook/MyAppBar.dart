@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/activitys/CanvasActivity.dart';
 import 'package:flutter_app/activitys/EventBusActivity.dart';
 import 'package:flutter_app/activitys/PageAnimActivity.dart';
+import 'package:flutter_app/res/colors.dart';
 import 'package:flutter_app/res/events.dart';
 import 'package:flutter_app/res/strings.dart';
+import 'package:flutter_app/res/styles.dart';
 import 'package:flutter_app/utils/ScreenUtil.dart';
 import 'package:flutter_app/widgets/BaseActivity.dart';
 import 'package:flutter_app/widgets/PopupWindow.dart';
@@ -51,39 +53,52 @@ class HomePageState extends State<HomePage>{
   Widget build(BuildContext context) {
     double bannerWidth = ScreenUtil.getScreenWidth(context);
     double bannerHeight = bannerWidth * 9 / 16;
-    return Container(
-      constraints: BoxConstraints.expand(),
-      child: ListView(
-        children: <Widget>[
-          Container(
-            height: bannerHeight,
-            child: Swiper(
-              itemHeight: bannerHeight,
-              itemWidth: bannerWidth,
-              itemBuilder: _swiperBuilder,
-              itemCount: 3,
-              pagination: SwiperPagination(
-                  builder: DotSwiperPaginationBuilder(
-                      color: Colors.black54,
-                      activeColor: Colors.white
-                  )
+    return ListView(
+      padding: EdgeInsets.all(0),
+      children: <Widget>[
+        //banner
+        Container(
+          height: bannerHeight,
+          child: Swiper(
+            itemHeight: bannerHeight,
+            itemWidth: bannerWidth,
+            itemBuilder: _swiperBuilder,
+            itemCount: 3,
+            pagination: SwiperPagination(
+              builder: DotSwiperPaginationBuilder(
+                size: 6,
+                activeSize: 6,
+                color: Colors.black54,
+                activeColor: Colors.white,
               ),
-              controller: SwiperController(),
-              scrollDirection: Axis.horizontal,
-              autoplay: true,
-              onTap: (index) => print('点击了$index'),
             ),
+            controller: SwiperController(),
+            scrollDirection: Axis.horizontal,
+            autoplay: true,
+            onTap: (index) => print('点击了$index'),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
   Widget _swiperBuilder(BuildContext context, int index){
-    return Image.network(
-      'https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1550587349851&di=ac6ded31ae5b36a318f4801c1d3fba07&imgtype=0&src=http%3A%2F%2Fimg.zcool.cn%2Fcommunity%2F01f250599633290000002129408089.jpg%402o.jpg',
-      fit: BoxFit.fill,
-    );
+    if(index == 0){
+      return Image.network(
+        Strings.banner_1,
+        fit: BoxFit.fill,
+      );
+    }else if(index == 1){
+      return Image.network(
+        Strings.banner_2,
+        fit: BoxFit.fill,
+      );
+    }else{
+      return Image.network(
+        Strings.banner_3,
+        fit: BoxFit.fill,
+      );
+    }
   }
 }
 
@@ -226,7 +241,9 @@ class CounterState extends State<Counter> {
 }
 
 void main() {
-  runApp(new MainActivity());
+  runApp(MaterialApp(
+    home: MainActivity(),
+  ));
 }
 
 class FindPage extends StatefulWidget{
@@ -241,29 +258,97 @@ class FindPage extends StatefulWidget{
 }
 
 class FindPageState extends State<FindPage> {
+  TextEditingController nameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text('发现'),
-      ),
-      body: Stack(
-        children: <Widget>[
-          new Center(
-            child: new RaisedButton(
-                child: new Text('跳转我的'),
-                onPressed: () {
-//              Navigator.push(
-//                  context,
-//                  new MaterialPageRoute(
-//                      builder: (context) => new SecondScreen()));
-                  widget.callback();
-                }),
+    return ListView(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.all(15),
+          padding: EdgeInsets.only(left: 15, right: 15),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.grey,
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(30),
           ),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(
+                    hintText: '请输入用户名',
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (text) {
+                    setState(() {
 
-        ],
-      ),
+                    });
+                  },
+                ),
+              ),
+              Text(
+                '发送验证码',
+                style: Styles.normalText,
+              ),
+            ],
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(left: 15, right: 15),
+          padding: EdgeInsets.only(left: 15, right: 15),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.grey,
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: TextField(
+            controller: passwordController,
+            decoration: InputDecoration(
+              hintText: '请输入密码',
+              border: InputBorder.none,
+            ),
+            onChanged: (text) {
+              setState(() {
+
+              });
+            },
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(left: 15, right: 15, top: 15),
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colours.main_color,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Center(
+            child: Text(
+              '登录',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 16,
+                decoration: TextDecoration.none,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
