@@ -481,7 +481,6 @@ class MainActivityState extends State<MainActivity> with SingleTickerProviderSta
   double popupHeight = 0;
   double popupLeft = 0;
   double popupTop = 0;
-  bool showLoading = false;
 
   @override
   void initState() {
@@ -491,13 +490,6 @@ class MainActivityState extends State<MainActivity> with SingleTickerProviderSta
     _tabController.addListener(() {
       setState(() {
         selectedIndex = _tabController.index;
-      });
-    });
-
-    eventBus.on<HttpRequestEvent>().listen((event){
-      setState(() {
-        showLoading = event.isRequest;
-        print('显示弹框' + showLoading.toString());
       });
     });
   }
@@ -519,29 +511,7 @@ class MainActivityState extends State<MainActivity> with SingleTickerProviderSta
               child: (popupChild == null ? Divider() : popupChild),
             ),
 
-            Offstage(
-              offstage: !showLoading,
-              child: Container(
-                constraints: BoxConstraints.expand(),
-                color: Color.fromARGB(51, 0, 0, 0),
-                child: Center(
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '正在加载...',
-                        style: Styles.normalText,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+
           ],
         ),
         onWillPop: () {

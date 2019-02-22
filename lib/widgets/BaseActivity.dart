@@ -11,8 +11,14 @@ import 'package:flutter_app/widgets/TopBar.dart';
 class BaseActivity extends StatefulWidget{
   Widget topBar;
   Widget page;
+  bool showLoading;
 
-  BaseActivity({Key key, this.topBar, this.page}) : super(key: key);
+  BaseActivity({
+    Key key,
+    this.topBar,
+    this.page,
+    this.showLoading: false
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -39,6 +45,30 @@ class BaseActivityState extends State<BaseActivity>{
           ),
           body: widget.page,
         ),
+
+        Offstage(
+          offstage: !widget.showLoading,
+          child: Container(
+            constraints: BoxConstraints.expand(),
+            color: Color.fromARGB(51, 0, 0, 0),
+            child: Center(
+              child: Container(
+                width: 120,
+                height: 120,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Center(
+                  child: Text(
+                    '正在加载...',
+                    style: Styles.normalText,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -46,7 +76,6 @@ class BaseActivityState extends State<BaseActivity>{
 
 //全局的Get请求
 requestGet({String baseUrl, String path, Map<String, String> params, callback, errorback}) async{
-  eventBus.fire(HttpRequestEvent(true));
 
   if(baseUrl == null){
     baseUrl = Config.API_HOST;
@@ -65,7 +94,6 @@ requestGet({String baseUrl, String path, Map<String, String> params, callback, e
     }else{
       errorback('服务器异常');
     }
-    eventBus.fire(HttpRequestEvent(false));
   }catch(e){
     print(e);
     errorback('解析异常');
