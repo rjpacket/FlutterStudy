@@ -6,3 +6,8 @@ class EventBusEvent{
   String title;
   EventBusEvent(this.title);
 }
+
+class HttpRequestEvent{
+  bool isRequest;
+  HttpRequestEvent(this.isRequest);
+}

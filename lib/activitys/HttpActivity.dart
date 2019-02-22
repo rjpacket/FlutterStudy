@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app/res/events.dart';
 import 'package:flutter_app/res/styles.dart';
 import 'package:flutter_app/widgets/BaseActivity.dart';
 import 'package:flutter_app/widgets/TopBar.dart';
@@ -15,13 +16,35 @@ class HttpActivity extends StatefulWidget{
 }
 
 class HttpActivityState extends State<HttpActivity>{
-  List<Map<String, String>> data = [];
+  List<Map<String, String>> showData = [];
 
   @override
   void initState() {
     super.initState();
 
-    requestData();
+//    requestData();
+
+    var path = '/satinGodApi';
+    Map<String, String> params = {
+      'type': '1',
+      'page': '1',
+    };
+
+    requestGet(path: path, params: params, callback: (data) {
+      var result = json.decode(data);
+      print(result);
+      for (var value in result['data']) {
+        showData.add({
+          'text': value['text']
+        });
+      }
+
+      setState(() {
+
+      });
+    }, errorback: (error) {
+
+    });
   }
 
   requestData() async{
@@ -38,7 +61,7 @@ class HttpActivityState extends State<HttpActivity>{
         result = json.decode(jsonData);
         print(result);
         for (var value in result['data']) {
-          data.add({
+          showData.add({
             'text': value['text']
           });
         }
@@ -62,14 +85,14 @@ class HttpActivityState extends State<HttpActivity>{
         title: 'Http请求',
       ),
       page: ListView.builder(
-        itemCount: data.length,
+        itemCount: showData.length,
         itemBuilder: _buildListView,
       ),
     );
   }
 
   Widget _buildListView(BuildContext context, int index) {
-    var item = data[index];
+    var item = showData[index];
     return Container(
       margin: EdgeInsets.all(15),
       padding: EdgeInsets.all(15),
@@ -89,28 +112,4 @@ class HttpActivityState extends State<HttpActivity>{
       ),
     );
   }
-}
-
-class Joke{
-  String type;
-  String text;
-  String username;
-  String uid;
-  String header;
-  int comment;
-  String top_commentsVoiceuri;
-  String top_commentsContent;
-  String top_commentsHeader;
-  String top_commentsName;
-  String passtime;
-  int soureid;
-  int up;
-  int down;
-  int forward;
-  String image;
-  String gif;
-  String thumbnail;
-  String video;
-
-  Joke();
 }

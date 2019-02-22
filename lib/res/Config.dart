@@ -1,4 +1,10 @@
 class Config{
+
+
+  static const String API_HOST = "www.apiopen.top";
+
+
+
   //设计稿的宽度
   static const double DESIGN_WIDTH = 360;
   //设计稿的宽度
