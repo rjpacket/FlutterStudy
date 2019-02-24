@@ -259,98 +259,48 @@ class FindPage extends StatefulWidget{
 }
 
 class FindPageState extends State<FindPage> {
-  TextEditingController nameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
 
-  @override
-  void dispose() {
-    nameController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
+  double downY = 0;
+  double dy = 0;
+
+  ScrollController scrollController = ScrollController(initialScrollOffset: 200, keepScrollOffset: true);
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        Container(
-          margin: EdgeInsets.all(15),
-          padding: EdgeInsets.only(left: 15, right: 15),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(
-              color: Colors.grey,
-              width: 1,
-            ),
-            borderRadius: BorderRadius.circular(30),
+    return GestureDetector(
+      onVerticalDragStart: _dragStart,
+      onVerticalDragUpdate: _dragUpdate,
+      onVerticalDragEnd: _dragEnd,
+      child: ListView(
+        padding: EdgeInsets.all(0),
+        controller: scrollController,
+        physics: AlwaysScrollableScrollPhysics(),
+        children: <Widget>[
+          Container(
+            height: 200,
+            color: Colors.redAccent,
           ),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: TextField(
-                  controller: nameController,
-                  decoration: InputDecoration(
-                    hintText: '请输入用户名',
-                    border: InputBorder.none,
-                  ),
-                  onChanged: (text) {
-                    setState(() {
-
-                    });
-                  },
-                ),
-              ),
-              Text(
-                '发送验证码',
-                style: Styles.normalText,
-              ),
-            ],
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.only(left: 15, right: 15),
-          padding: EdgeInsets.only(left: 15, right: 15),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(
-              color: Colors.grey,
-              width: 1,
-            ),
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: TextField(
-            controller: passwordController,
-            decoration: InputDecoration(
-              hintText: '请输入密码',
-              border: InputBorder.none,
-            ),
-            onChanged: (text) {
-              setState(() {
-
-              });
-            },
-          ),
-        ),
-        Container(
-          margin: EdgeInsets.only(left: 15, right: 15, top: 15),
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: Colours.main_color,
-            borderRadius: BorderRadius.circular(30),
-          ),
-          child: Center(
-            child: Text(
-              '登录',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                decoration: TextDecoration.none,
-              ),
-            ),
-          ),
-        ),
-      ],
+          Container(
+            height: 300,
+            color: Colors.blueAccent,
+          )
+        ],
+      ),
     );
+  }
+
+  void _dragStart(DragStartDetails details) {
+    downY = details.globalPosition.dy;
+  }
+
+  void _dragUpdate(DragUpdateDetails details) {
+    setState(() {
+      dy = details.globalPosition.dy - downY;
+    });
+  }
+
+  void _dragEnd(DragEndDetails details) {
+
   }
 }
 
