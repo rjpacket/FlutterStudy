@@ -6,6 +6,7 @@ import 'package:flutter_app/activitys/CanvasActivity.dart';
 import 'package:flutter_app/activitys/EventBusActivity.dart';
 import 'package:flutter_app/activitys/HttpActivity.dart';
 import 'package:flutter_app/activitys/PageAnimActivity.dart';
+import 'package:flutter_app/activitys/WidgetAnimActivity.dart';
 import 'package:flutter_app/res/colors.dart';
 import 'package:flutter_app/res/events.dart';
 import 'package:flutter_app/res/strings.dart';
@@ -439,6 +440,9 @@ class MinePageState extends State<MinePage> {
           SettingItem(
             icon: 'assets/images/nav_05.png',
             settingTitle: Strings.mine_face,
+            callback: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) => WidgetAnimActivity()));
+            },
           ),
           Divider(height: 1,),
           SettingItem(
